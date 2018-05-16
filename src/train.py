@@ -20,7 +20,8 @@ if __name__ == "__main__":
             max_sent_len = 60,
             shuffle_data = True,
             train_file = '../data/zh-train',
-            dev_file = '../data/zh-test',   # dev/test in train/test mode.
+            dev_file = '../data/zh-dev',   # dev/test in train/test mode.
+            test_file = '../data/zh-test',
             pre_trained = None,
             lr = 0.1,
             edecay = 0.05, #msr,pku 0.2,0.1

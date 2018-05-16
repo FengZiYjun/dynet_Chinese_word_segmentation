@@ -2,7 +2,14 @@
 from parsed text to CWS input
 
 """
-file = "test_gold"
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--input")
+args = parser.parse_args()
+file = args.input
+
+#file = "test_gold"
 
 NUMS = "0123456789"
 
@@ -26,5 +33,5 @@ for line in lines:
     string += "\n"
 
 
-with open(file + "_to_input", "w", encoding="utf-8") as f:
+with open(file + "_cws", "w", encoding="utf-8") as f:
     f.write(string)

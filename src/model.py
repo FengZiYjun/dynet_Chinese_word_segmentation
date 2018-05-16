@@ -12,6 +12,8 @@ np.random.seed(970)
 
 Sentence = namedtuple('Sentence',['score','score_expr','LSTMState','y','prevState','wlen','golden'])
 
+best_accuracy = 0.0
+
 class CWS (object):
     def __init__(self,Cemb,character_idx_map,options):
         #model = dy.Model()
@@ -179,6 +181,7 @@ def dy_train_model(
     shuffle_data = True,
     train_file = '../data/train',
     dev_file = '../data/dev',
+    test_file = '../data/test',
     lr = 0.5,
     edecay = 0.1,
     momentum = 0.5,
@@ -226,6 +229,7 @@ def dy_train_model(
     print 'Start training model'
     start_time = time.time()
     nsamples = 0
+
     for eidx in xrange(max_epochs):
         idx_list = range(n)
         if shuffle_data:
@@ -244,6 +248,26 @@ def dy_train_model(
         end_time = time.time()
         print 'Trained %s epoch(s) (%d samples) took %.lfs per epoch'%(eidx+1,nsamples,(end_time-start_time)/(eidx+1))       
         test(cws,dev_file,'../result/dev_result%d'%(eidx+1))
-        os.system('python score.py %s %d %d'%(dev_file,eidx+1,eidx+1))
+
+        # to do:compare new/old F scores. Use my script instead.
+        os.system("python ../result/parsed2cws.py --input ../result/dev_result%d" % (eidx + 1))
+        os.system("python ../result/compare.py --f1 dev_result%d_cws --f2 test_gold_cws" % (eidx + 1))
+        with open("../result/tmp", "r") as f:
+            accuracy = f.read()
+        accuracy = float(accuracy)
+        print 'Accuracy = %s' % (accuracy)
+        if accuracy > best_accuracy:
+            best_accuracy = accuracy
+            # predict on test file
+            print("Testing on test set.")
+            test(cws, test_file, '../result/pred_test')
+
+        os.system("rm ../result/tmp")
+        
+
+        #os.system('python score.py %s %d %d'%(dev_file,eidx+1,eidx+1))
         #cws.save('epoch%d'%(eidx+1))
         #print 'Current model saved'
+
+
+    # main loop ends
