@@ -1,5 +1,15 @@
 # greedyCWS
 
+### Updated from contributor FengZiYjun
+
+1. Change the scoring script.
+2. Introduce dev set.
+3. Predict and save on test set only when dev set gets higher accuracy.
+4. 
+
+
+------ original README.md ----------
+
 Hi, this code is easy to use!
 
 Please check the `src/train.py` for all hyper-parameter and IO settings.
