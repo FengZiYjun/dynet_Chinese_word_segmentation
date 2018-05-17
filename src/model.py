@@ -12,7 +12,6 @@ np.random.seed(970)
 
 Sentence = namedtuple('Sentence',['score','score_expr','LSTMState','y','prevState','wlen','golden'])
 
-best_accuracy = 0.0
 
 class CWS (object):
     def __init__(self,Cemb,character_idx_map,options):
@@ -230,6 +229,10 @@ def dy_train_model(
     start_time = time.time()
     nsamples = 0
 
+
+    best_accuracy = 0.0
+
+    # Main training loop
     for eidx in xrange(max_epochs):
         idx_list = range(n)
         if shuffle_data:
