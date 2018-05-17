@@ -8,17 +8,19 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--f1")
 parser.add_argument("--f2", default="predict_to_cmp")
+parser.add_argument("--output", default="tmp")
 args = parser.parse_args()
 file1 = args.f1
 file2 = args.f2
+output = args.output
 
 #file1 = "dev_result29_to_input"
 #file2 = "test_gold_to_input"  # ground truth
 
-with open(file1, "r", encoding="utf-8") as f:
+with open(file1, "r") as f:
     lines1 = f.readlines()
 
-with open(file2, "r", encoding="utf-8") as f:
+with open(file2, "r") as f:
     lines2 = f.readlines()
 
 if len(lines1) != len(lines2):
@@ -38,7 +40,7 @@ diff = False
 
 
 #logger = logger.Logger("./cmp_" + file1[:3] + "_" + file2[:3])
-logger = logger.Logger("tmp")
+logger = logger.Logger(output)
 log_text = ""
 
 while i < length1 and j < length2:
@@ -99,10 +101,11 @@ while i < length1 and j < length2:
 
 
 
-print("length=", length)
-print("total=", total)
-print("correct=", correct)
-print("Accuracy={}".format(correct / total))
+#print("length=", length)
+#print("total=", total)
+#print("correct=", correct)
+#print("Accuracy={}".format(correct / total))
+
 log_text += correct / total
 
-#logger.log(log_text)
+logger.log(log_text)

@@ -247,23 +247,38 @@ def dy_train_model(
         cws.trainer.update_epoch(1.)
         end_time = time.time()
         print 'Trained %s epoch(s) (%d samples) took %.lfs per epoch'%(eidx+1,nsamples,(end_time-start_time)/(eidx+1))       
-        test(cws,dev_file,'../result/dev_result%d'%(eidx+1))
 
-        # to do:compare new/old F scores. Use my script instead.
-        os.system("python ../result/parsed2cws.py --input ../result/dev_result%d" % (eidx + 1))
-        os.system("python ../result/compare.py --f1 dev_result%d_cws --f2 test_gold_cws" % (eidx + 1))
+        # predict on dev set
+        test(cws, dev_file, '../result/dev_result%d'%(eidx+1))
+
+        # convert dev parsed text into CWS BMES format
+        os.system("python ../result/parsed2cws.py --input ../result/dev_result%d " 
+                  " --output ../result/dev_result%d_cws " % (eidx + 1, eidx + 1))
+
+        # prepare dev ground truth
+        if not os.path.exists("../result/dev_gold_cws"):
+            os.system("python ../result/parsed2cws.py --input %s --output dev_gold_cws" % dev_file)
+
+        # compare dev prediction & ground truth
+        os.system("python ../result/compare.py --f1 dev_result%d_cws --f2 dev_gold_cws"
+                  " --output tmp" % (eidx + 1))
+
         with open("../result/tmp", "r") as f:
             accuracy = f.read()
         accuracy = float(accuracy)
+
+        os.system("rm ../result/tmp")
+
         print 'Accuracy = %s' % (accuracy)
+
+        # predict on test set if dev gets better accuracy
         if accuracy > best_accuracy:
             best_accuracy = accuracy
             # predict on test file
             print("Testing on test set.")
             test(cws, test_file, '../result/pred_test')
 
-        os.system("rm ../result/tmp")
-        
+
 
         #os.system('python score.py %s %d %d'%(dev_file,eidx+1,eidx+1))
         #cws.save('epoch%d'%(eidx+1))

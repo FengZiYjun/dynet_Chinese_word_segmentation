@@ -6,14 +6,16 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--input")
+parser.add_argument("--output")
 args = parser.parse_args()
 file = args.input
+output = args.output
 
 #file = "test_gold"
 
 NUMS = "0123456789"
 
-with open(file, "r", encoding="utf-8") as f:
+with open(file, "r") as f:
     lines = f.readlines()
 
 string = ""
@@ -33,5 +35,5 @@ for line in lines:
     string += "\n"
 
 
-with open(file + "_cws", "w", encoding="utf-8") as f:
+with open(output, "w") as f:
     f.write(string)
