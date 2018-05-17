@@ -91,12 +91,16 @@ while i < length1 and j < length2:
         flag = False
         for k in range(1, 5):
             #print("test ", lines1[i+k][0], " and ", tokens2[0])
+            if i+k >= length1:
+                break
             if lines1[i+k][0] == tokens2[0]:
                 i = i + k
                 flag = True
                 break
         if flag == False:
             for k in range(1, 5):
+                if j+k >= length2:
+                    break
                 #print("test ", lines2[j+k][0], " and ", tokens1[0])
                 if lines2[j+k][0] == tokens1[0]:
                     j = j + k
