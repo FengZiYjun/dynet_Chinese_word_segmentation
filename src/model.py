@@ -8,6 +8,21 @@ import dynet as dy
 from tools import initCemb, prepareData
 from test import test
 
+"""
+File converts: 
+test input: continued text ---(sentence_cut.py)---> test_cut
+train/dev input: conll file ---(conll2parse.py)---> parsed text
+this model input: parsed text/test_cut -------> word seg text
+word seg text ---(parse2conll.py)---> conll file
+
+Evaluation over dev:
+dev parsed text ---(parse2cws.py)---> cws format file(dev_truth)
+dev pred text ---(parse2cws.py)---> cws format file(dev_pred)
+cws format files(dev_truth & dev_pred) ---(compare.py)---> tmp file(a float)
+this model reads the float from tmp file
+"""
+
+
 np.random.seed(970)
 
 Sentence = namedtuple('Sentence',['score','score_expr','LSTMState','y','prevState','wlen','golden'])
@@ -187,6 +202,14 @@ def dy_train_model(
     pre_trained = '../w2v/char_vecs_100',
     word_proportion = 0.5
 ):
+    # To do:
+    # 1. convert conll files into parsed text with conll2parse.py
+    # 2. replace dev_file & train_file with new file paths
+
+    # sentence segmentation
+    os.system("python ../result/sentence_cut.py %s ../data/test_cut" % test_file)
+    test_file = "../data/test_cut"
+
     options = locals().copy()
     print 'Model options:'
     for kk,vv in options.iteritems():
@@ -289,3 +312,6 @@ def dy_train_model(
 
 
     # main loop ends
+
+    # convert final pred_test into conll format
+    os.system("python ../result/parse2conll.py --input ../result/pred_test --output ../result/test.conll")
