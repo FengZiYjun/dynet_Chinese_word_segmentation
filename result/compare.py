@@ -26,8 +26,8 @@ with open(file2, "r") as f:
     lines2 = f.readlines()
 
 
-if len(lines1) != len(lines2):
-    print("length not equal")
+#if len(lines1) != len(lines2):
+#    print("length not equal")
 
 length = min(len(lines1), len(lines2))
 length1 = len(lines1)
@@ -115,6 +115,6 @@ while i < length1 and j < length2:
 #print("correct=", correct)
 #print("Accuracy={}".format(correct / total))
 
-log_text += str(correct / total)
+log_text += str(float(correct) / total)
 
 logger.log(log_text)

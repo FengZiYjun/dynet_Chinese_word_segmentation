@@ -260,11 +260,11 @@ def dy_train_model(
 
         # prepare dev ground truth
         if not os.path.exists("../result/dev_gold_cws"):
-            os.system("python ../result/parsed2cws.py --input %s --output dev_gold_cws" % dev_file)
+            os.system("python ../result/parsed2cws.py --input %s --output ../result/dev_gold_cws" % dev_file)
 
         # compare dev prediction & ground truth
-        os.system("python ../result/compare.py --f1 dev_result%d_cws --f2 dev_gold_cws"
-                  " --output tmp" % (eidx + 1))
+        os.system("python ../result/compare.py --f1 ../result/dev_result%d_cws --f2 ../result/dev_gold_cws"
+                  " --output ../result/tmp" % (eidx + 1))
 
         with open("../result/tmp", "r") as f:
             accuracy = f.read()
