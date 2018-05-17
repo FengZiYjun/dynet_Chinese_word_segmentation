@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 """
 from parsed text to CWS input
 
@@ -20,6 +22,7 @@ with open(file, "r") as f:
 
 string = ""
 for line in lines:
+    line = line.decode('utf8')
     for tokens in line[:-1].split():
         if tokens[0] in NUMS:
             string += (tokens + '#<NUM>#S_N\n')
@@ -36,4 +39,4 @@ for line in lines:
 
 
 with open(output, "w") as f:
-    f.write(string)
+    f.write(string.encode('utf8'))

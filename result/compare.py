@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 """
 Compare two CWS input files with the same input characters but different BMES tags
 
@@ -23,12 +25,19 @@ with open(file1, "r") as f:
 with open(file2, "r") as f:
     lines2 = f.readlines()
 
+
 if len(lines1) != len(lines2):
     print("length not equal")
 
 length = min(len(lines1), len(lines2))
 length1 = len(lines1)
 length2 = len(lines2)
+
+for i in range(length1):
+    lines1[i] = lines1[i].decode('utf8')
+
+for i in range(length2):
+    lines2[i] = lines2[i].decode('utf8')
 
 total = 0
 correct = 0
@@ -106,6 +115,6 @@ while i < length1 and j < length2:
 #print("correct=", correct)
 #print("Accuracy={}".format(correct / total))
 
-log_text += correct / total
+log_text += str(correct / total)
 
 logger.log(log_text)
