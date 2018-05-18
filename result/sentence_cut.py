@@ -5,8 +5,10 @@ import sys;
 import os;
 
 #设置分句的标志符号
-cutlist="。！？…!?".decode('utf-8')
-punct_pair_str = "《》“”‘’{}（）()【】\"\"".decode('utf-8')
+cutlist=".".decode('utf-8')
+#punct_pair_str = "《》“”‘’{}（）()【】\"\"".decode('utf-8')
+punct_pair_str = "".decode('utf-8')
+
 punct_pair_hm = {}
 
 sent_count = 0
