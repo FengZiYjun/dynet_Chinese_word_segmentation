@@ -4,7 +4,9 @@
 import sys;
 import os;
 
-#设置分句的标志符号
+# To do:
+# do not cut within numbers
+
 cutlist=".".decode('utf-8')
 #punct_pair_str = "《》“”‘’{}（）()【】\"\"".decode('utf-8')
 punct_pair_str = "".decode('utf-8')
@@ -13,7 +15,6 @@ punct_pair_hm = {}
 
 sent_count = 0
 
-# 检查某字符是否分句标志符号的函数；如果是，返回True， 否则返回False
 def FindTok(char):
     global cutlist
     if char in cutlist:
@@ -21,6 +22,7 @@ def FindTok(char):
     else:
         return False
 
+# Core function
 def CutSent(cut_str):
 
     sent_list = []
