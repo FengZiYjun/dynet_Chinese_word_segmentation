@@ -212,7 +212,7 @@ def dy_train_model(
     print 'converted conllu input to word seg input'
 
     # sentence segmentation
-    os.system("python ../result/sentence_cut.py %s ../data/test_cut" % test_file)
+    os.system("python ../result/sent_seg.py --input %s --output ../data/test_cut" % test_file)
     test_file = "../data/test_cut"
     print 'finished sentence seg over test set'
 
