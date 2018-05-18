@@ -209,10 +209,12 @@ def dy_train_model(
     # replace dev_file & train_file with new file paths
     train_file = "../data/train_parsed"
     dev_file = "../data/dev_parsed"
+    print 'converted conllu input to word seg input'
 
     # sentence segmentation
     os.system("python ../result/sentence_cut.py %s ../data/test_cut" % test_file)
     test_file = "../data/test_cut"
+    print 'finished sentence seg over test set'
 
     options = locals().copy()
     print 'Model options:'
