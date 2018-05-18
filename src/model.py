@@ -202,9 +202,13 @@ def dy_train_model(
     pre_trained = '../w2v/char_vecs_100',
     word_proportion = 0.5
 ):
-    # To do:
-    # 1. convert conll files into parsed text with conll2parse.py
-    # 2. replace dev_file & train_file with new file paths
+    # convert conll files into parsed text with conll2parse.py
+    os.system("python ../result/conll2parsed.py --input %s --output ../data/train_parsed" % train_file)
+    os.system("python ../result/conll2parsed.py --input %s --output ../data/dev_parsed" % dev_file)
+
+    # replace dev_file & train_file with new file paths
+    train_file = "../data/train_parsed"
+    dev_file = "../data/dev_parsed"
 
     # sentence segmentation
     os.system("python ../result/sentence_cut.py %s ../data/test_cut" % test_file)

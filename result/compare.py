@@ -4,6 +4,7 @@
 Compare two CWS input files with the same input characters but different BMES tags
 
 """
+
 import logger
 import argparse
 

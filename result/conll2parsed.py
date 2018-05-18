@@ -2,13 +2,23 @@
 build parsed text from conllu files
 
 """
+import argparse
 
-with open("zh.conllu", "r", encoding="utf-8") as f:
+parser = argparse.ArgumentParser()
+parser.add_argument("--input")
+parser.add_argument("--output")
+args = parser.parse_args()
+input_file = args.input
+output_file = args.output
+
+
+with open(input_file, "r") as f:
     lines = f.readlines()
 
 tokens = []
 string = ""
 for line in lines:
+    line = line.decode("utf8")
     if line[0] == '#':
         continue
     if line == "\n":
@@ -18,5 +28,5 @@ for line in lines:
     tokens.append(line.split()[1])
 
 
-with open("test_gold", "w", encoding="utf-8") as f:
-    f.write(string)
+with open(output_file, "w") as f:
+    f.write(string.encode("utf8"))
