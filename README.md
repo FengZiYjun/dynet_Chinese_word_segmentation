@@ -4,11 +4,21 @@
 
 1. Change the scoring script.
 2. Introduce dev set.
-3. Predict and save on test set only when dev set gets higher accuracy.
-4. 
+3. Predict on test set only when dev set gets higher accuracy.
+4. Deal with train/dev input with *conllu* format, and test input of raw text.
+
+Specify the train/dev/test file as command line parameters `--train`, `--dev`, and `--test`.
+
+Choose a GPU ran by dynet. `--dynet-devices GPU: 0`
+
+```cmd
+cd src
+python train.py --train ../data/zh-ud-train.conllu --dev ../data/zh-ud-dev.conllu --test ../data/zh_test_raw --dynet-devices GPU:4
+```
 
 
------- original README.md ----------
+
+**-------------- original README.md ---------------------------**
 
 Hi, this code is easy to use!
 
