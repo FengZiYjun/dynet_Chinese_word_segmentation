@@ -6,6 +6,7 @@
 2. Introduce dev set.
 3. Predict on test set only when dev set gets higher accuracy.
 4. Deal with train/dev input with *conllu* format, and test input of raw text.
+5. The final result of test output will be converted into the first two columns of a *conllu* file.
 
 Specify the train/dev/test file as command line parameters `--train`, `--dev`, and `--test`.
 
