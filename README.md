@@ -9,7 +9,7 @@
 
 Specify the train/dev/test file as command line parameters `--train`, `--dev`, and `--test`.
 
-Choose a GPU ran by dynet. `--dynet-devices GPU: 0`
+Choose a GPU run by dynet. `--dynet-devices GPU: 0`
 
 ```cmd
 cd src
