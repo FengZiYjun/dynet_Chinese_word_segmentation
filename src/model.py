@@ -209,17 +209,17 @@ def dy_train_model(
     # replace dev_file & train_file with new file paths
     train_file = "../data/train_parsed"
     dev_file = "../data/dev_parsed"
-    print 'converted conllu input to word seg input'
+    #print 'converted conllu input to word seg input'
 
     # sentence segmentation
     os.system("python ../result/sent_seg.py --input %s --output ../data/test_cut" % test_file)
     test_file = "../data/test_cut"
-    print 'finished sentence seg over test set'
+    #print 'finished sentence seg over test set'
 
     options = locals().copy()
-    print 'Model options:'
-    for kk,vv in options.iteritems():
-        print '\t',kk,'\t',vv
+    #print 'Model options:'
+    #for kk,vv in options.iteritems():
+        #print '\t',kk,'\t',vv
 
     Cemb, character_idx_map = initCemb(char_dims,train_file,pre_trained)
 
@@ -252,9 +252,9 @@ def dy_train_model(
         cws.use_word_embed(known_words)
 
     n = len(char_seq)
-    print 'Total number of training instances:',n
+    #print 'Total number of training instances:',n
     
-    print 'Start training model'
+    #print 'Start training model'
     start_time = time.time()
     nsamples = 0
 
@@ -270,7 +270,7 @@ def dy_train_model(
         for idx in idx_list:
             loss = cws.backward(char_seq[idx],truth[idx])
             if np.isnan(loss):
-                print 'somthing went wrong, loss is nan.'
+                #print 'somthing went wrong, loss is nan.'
                 return
             nsamples += 1
             if nsamples % batch_size == 0:
@@ -278,7 +278,7 @@ def dy_train_model(
 
         cws.trainer.update_epoch(1.)
         end_time = time.time()
-        print 'Trained %s epoch(s) (%d samples) took %.lfs per epoch'%(eidx+1,nsamples,(end_time-start_time)/(eidx+1))       
+        #print 'Trained %s epoch(s) (%d samples) took %.lfs per epoch'%(eidx+1,nsamples,(end_time-start_time)/(eidx+1))       
 
         # predict on dev set
         test(cws, dev_file, '../result/dev_result%d'%(eidx+1))
@@ -301,7 +301,7 @@ def dy_train_model(
 
         os.system("rm ../result/tmp")
 
-        print 'Accuracy = %s' % (accuracy)
+        print('Accuracy = %s' % (accuracy))
 
         # predict on test set if dev gets better accuracy
         if accuracy > best_accuracy:

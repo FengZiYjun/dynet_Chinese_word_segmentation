@@ -5,7 +5,7 @@ import sys
 Maximum_Word_Length = 4
 
 def OT(str):
-    print str.encode('utf8')
+    #print str.encode('utf8')
 
 def strQ2B(ustring):
     """全角转半角"""
@@ -42,9 +42,9 @@ def preprocess(path, longws= set()):
                 word_count+=1
             sents.append(new_sent)
             sent_count+=1
-    print  path
-    print 'long words count', count_longws
-    print  'sents %d, words %d chars %d' %(sent_count, word_count, char_count)
+    #print  path
+    #print 'long words count', count_longws
+    #print  'sents %d, words %d chars %d' %(sent_count, word_count, char_count)
     return sents
 
 def write(filename, sents):
@@ -65,7 +65,7 @@ def check(sents): # get those words longer than our maximum word length setting
                 longwords.append(word)
     for word in set(longwords):
         OT(word)
-    print 'len>%d words count'%Maximum_Word_Length,count,100.0*count/all_count,'%'
+    #print 'len>%d words count'%Maximum_Word_Length,count,100.0*count/all_count,'%'
     return set(longwords)
 
 if __name__ == "__main__":
