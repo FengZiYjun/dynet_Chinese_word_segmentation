@@ -13,12 +13,15 @@ if __name__ == "__main__":
     parser.add_argument("--dev")
     parser.add_argument("--test")
     parser.add_argument("--dynet-devices")
+    parser.add_argument("--infer_model", default=None)
     args = parser.parse_args()
     train = args.train
     dev = args.dev
     test = args.test
+    infer_model = args.infer_model
     
     dy_train_model(
+            infer_mode = True,
             max_epochs = 30,
             batch_size = 256,
             char_dims = 100,
@@ -26,7 +29,7 @@ if __name__ == "__main__":
             nhiddens = 50,
             dropout_rate = 0.2,
             max_word_len = 4,
-            load_params = None, # None for train mode, otherwise please specify the parameter file.   
+            load_params = infer_model, # None for train mode, otherwise please specify the parameter file.   
             margin_loss_discount = 0.2,
             max_sent_len = 60,
             shuffle_data = True,

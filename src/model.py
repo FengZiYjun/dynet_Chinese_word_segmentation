@@ -182,6 +182,7 @@ class CWS (object):
         return res
 
 def dy_train_model(
+    infer_mode = False,
     max_epochs = 30,
     batch_size = 256,
     char_dims = 50,
@@ -202,19 +203,20 @@ def dy_train_model(
     pre_trained = '../w2v/char_vecs_100',
     word_proportion = 0.5
 ):
-    # convert conll files into parsed text with conll2parse.py
-    os.system("python ../result/conll2parsed.py --input %s --output ../data/train_parsed" % train_file)
-    os.system("python ../result/conll2parsed.py --input %s --output ../data/dev_parsed" % dev_file)
+    if infer_mode is False:
+        # convert conll files into parsed text with conll2parse.py
+        os.system("python ../result/conll2parsed.py --input %s --output ../data/train_parsed" % train_file)
+        os.system("python ../result/conll2parsed.py --input %s --output ../data/dev_parsed" % dev_file)
 
-    # replace dev_file & train_file with new file paths
-    train_file = "../data/train_parsed"
-    dev_file = "../data/dev_parsed"
-    #print 'converted conllu input to word seg input'
+        # replace dev_file & train_file with new file paths
+        train_file = "../data/train_parsed"
+        dev_file = "../data/dev_parsed"
+        #print 'converted conllu input to word seg input'
 
-    # sentence segmentation
-    os.system("python ../result/sent_seg.py --input %s --output ../data/test_cut" % test_file)
-    test_file = "../data/test_cut"
-    #print 'finished sentence seg over test set'
+        # sentence segmentation
+        os.system("python ../result/sent_seg.py --input %s --output ../data/test_cut" % test_file)
+        test_file = "../data/test_cut"
+        #print 'finished sentence seg over test set'
 
     options = locals().copy()
     #print 'Model options:'
@@ -225,9 +227,14 @@ def dy_train_model(
 
     cws = CWS(Cemb,character_idx_map,options)
 
-    if load_params is not None:
-        cws.load(load_params)
-        test(cws, dev_file, 'result')
+    if infer_mode:
+        if load_params is not None:
+            cws.load(load_params)
+            test(cws, test_file, "../result/test_result")
+            exit()
+        else:
+            print("Please provide load_params")
+            exit()
 
     char_seq, _ , truth = prepareData(character_idx_map,train_file)
     
@@ -310,11 +317,9 @@ def dy_train_model(
             print("Testing on test set.")
             test(cws, test_file, '../result/pred_test')
 
-
-
-        #os.system('python score.py %s %d %d'%(dev_file,eidx+1,eidx+1))
-        #cws.save('epoch%d'%(eidx+1))
-        #print 'Current model saved'
+            #os.system('python score.py %s %d %d'%(dev_file,eidx+1,eidx+1))
+            cws.save("../result/model/best_cws_model")
+            print('Current model saved')
 
 
     # main loop ends
