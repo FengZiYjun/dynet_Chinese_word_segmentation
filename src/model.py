@@ -194,39 +194,48 @@ def dy_train_model(
     load_params = None,
     max_sent_len = 60,
     shuffle_data = True,
-    train_file = '../data/train',
-    dev_file = '../data/dev',
-    test_file = '../data/test',
+    train_file = None,
+    dev_file = None,
+    test_file = None,
     lr = 0.5,
     edecay = 0.1,
     momentum = 0.5,
     pre_trained = '../w2v/char_vecs_100',
     word_proportion = 0.5
 ):
-    if infer_mode is False:
-        # convert conll files into parsed text with conll2parse.py
-        os.system("python ../result/conll2parsed.py --input %s --output ../data/train_parsed" % train_file)
-        os.system("python ../result/conll2parsed.py --input %s --output ../data/dev_parsed" % dev_file)
+    if train_file is None:
+        print("Please provide training set.")
+        return
+
+    if infer_mode is False and dev_file is None:
+        print("Please provide dev set for training.")
+        return
+
+    if infer_mode is True and test_file is None:
+        print("Please provide test set.")
+        return
+    
+    if not infer_mode:
+        # convert conll files into word seg text with conll2parse.py
+        os.system("python conll2seg.py --input %s --output ../data/train_seg" % train_file)
+        os.system("python conll2seg.py --input %s --output ../data/dev_seg" % dev_file)
 
         # replace dev_file & train_file with new file paths
-        train_file = "../data/train_parsed"
-        dev_file = "../data/dev_parsed"
-        #print 'converted conllu input to word seg input'
+        train_file = "../data/train_seg"
+        dev_file = "../data/dev_seg"
+        print("converted conllu input to word seg input")
 
-        # sentence segmentation
-        os.system("python ../result/sent_seg.py --input %s --output ../data/test_cut" % test_file)
+    # sentence segmentation
+    if test_file:
+        os.system("python sent_seg.py --input %s --output ../data/test_cut" % test_file)
         test_file = "../data/test_cut"
-        #print 'finished sentence seg over test set'
+        print("finished sentence seg over test set")
 
     options = {"lr": lr, "momentum": momentum, "word_dims": word_dims, "char_dims": char_dims, 
             "nhiddens": nhiddens, "max_word_len": max_word_len, "dropout_rate": dropout_rate, 
             "margin_loss_discount": margin_loss_discount}
-    #options = locals().copy()
-    #print 'Model options:'
-    #for kk,vv in options.iteritems():
-        #print '\t',kk,'\t',vv
+    print("Model params: ", options)
 
-    print("char_embs={}, train_file={}, pre_train={}".format(char_dims, train_file, pre_trained))
     Cemb, character_idx_map = initCemb(char_dims,train_file,pre_trained)
 
     cws = CWS(Cemb, options)
@@ -255,17 +264,18 @@ def dy_train_model(
         cws.use_word_embed(known_words)
 
     n = len(char_seq)
-    #print 'Total number of training instances:',n
+    print("Total number of training instances:", n)
 
 
     if infer_mode:
         if load_params is not None:
             cws.load(load_params)
-            test(cws, test_file, "../result/test_result", character_idx_map)
-            exit()
+            test(cws, test_file, "../data/test_result", character_idx_map)
+            os.system("python parse2conll.py --input ../data/test_result --output ../result/zh_cws.conll")
+            return
         else:
             print("Please provide load_params")
-            exit()
+            return
 
     #print 'Start training model'
     start_time = time.time()
@@ -283,7 +293,7 @@ def dy_train_model(
         for idx in idx_list:
             loss = cws.backward(char_seq[idx],truth[idx])
             if np.isnan(loss):
-                #print 'somthing went wrong, loss is nan.'
+                print("somthing went wrong, loss is nan.")
                 return
             nsamples += 1
             if nsamples % batch_size == 0:
@@ -291,21 +301,21 @@ def dy_train_model(
 
         #cws.trainer.update_epoch(1.)  # update to latest dynet
         end_time = time.time()
-        #print 'Trained %s epoch(s) (%d samples) took %.lfs per epoch'%(eidx+1,nsamples,(end_time-start_time)/(eidx+1))       
+        print("Trained %s epoch(s) (%d samples) took %.lfs per epoch" % (eidx+1,nsamples,(end_time-start_time)/(eidx+1)))       
 
         # predict on dev set
         test(cws, dev_file, '../result/dev_result%d'%(eidx+1), character_idx_map)
 
         # convert dev parsed text into CWS BMES format
-        os.system("python ../result/parsed2cws.py --input ../result/dev_result%d " 
+        os.system("python parsed2cws.py --input ../result/dev_result%d " 
                   " --output ../result/dev_result%d_cws " % (eidx + 1, eidx + 1))
 
         # prepare dev ground truth
         if not os.path.exists("../result/dev_gold_cws"):
-            os.system("python ../result/parsed2cws.py --input %s --output ../result/dev_gold_cws" % dev_file)
+            os.system("python parsed2cws.py --input %s --output ../result/dev_gold_cws" % dev_file)
 
         # compare dev prediction & ground truth
-        os.system("python ../result/compare.py --f1 ../result/dev_result%d_cws --f2 ../result/dev_gold_cws"
+        os.system("python compare.py --f1 ../result/dev_result%d_cws --f2 ../result/dev_gold_cws"
                   " --output ../result/tmp" % (eidx + 1))
 
         with open("../result/tmp", "r") as f:
@@ -319,11 +329,12 @@ def dy_train_model(
         # predict on test set if dev gets better accuracy
         if accuracy > best_accuracy:
             best_accuracy = accuracy
-            # predict on test file
-            print("Testing on test set.")
-            test(cws, test_file, '../result/pred_test', character_idx_map)
-
-            #os.system('python score.py %s %d %d'%(dev_file,eidx+1,eidx+1))
+            print("Higher accuracy on dev test: ", accuracy)
+            
+            # apply on test set
+            if test_file:
+                test(cws, test_file, '../result/predict_test', character_idx_map)
+            
             cws.save("../result/model/best_cws_model")
             print('Current model saved')
 
@@ -331,4 +342,4 @@ def dy_train_model(
     # main loop ends
 
     # convert final pred_test into conll format
-    os.system("python ../result/parse2conll.py --input ../result/pred_test --output ../result/test.conll")
+    #os.system("python ../result/parse2conll.py --input ../result/pred_test --output ../result/test.conll")
