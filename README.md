@@ -2,21 +2,26 @@
 
 ### Updated from contributor FengZiYjun
 
-1. Change the scoring script.
-2. Introduce dev set.
-3. Predict on test set only when dev set gets higher accuracy.
-4. Deal with train/dev input with *conllu* format, and test input of raw text.
-5. The final result of test output will be converted into the first two columns of a *conllu* file.
-
-Specify the train/dev/test file as command line parameters `--train`, `--dev`, and `--test`.
+1. Change the scoring script. Use "BMES" labels as critarion.
+2. Introduce dev set. Save model and predict on test set only when dev set gets higher accuracy, if test set specified during training.
+3. Train/Dev input is in *conllu* format. Test input is a raw text.
+4. The final result of test output will be converted into the first two columns of a *conllu* file.
+5. Specify the train/dev/test file as command line parameters `--train`, `--dev`, and `--test`. `--epoch <int>` sets the maximum epochs for training.
+6. Add inference mode for deployment. Set `--infer_model <saved_model>` to turn on inference mode, otherwise training mode. `--test` and `--train` must be specified for inference.
 
 Choose a GPU run by dynet. `--dynet-devices GPU: 0`
 
+Training command:
 ```cmd
 cd src
-python train.py --train ../data/zh-ud-train.conllu --dev ../data/zh-ud-dev.conllu --test ../data/zh_test_raw --dynet-devices GPU:4
+python train.py --epoch 40 --train ../data/zh-ud-train.conllu --dev ../data/zh-ud-dev.conllu  --dynet-devices GPU:0 
 ```
 
+Testing command:
+```cmd
+cd src
+python train.py --infer_model ../result/model/best_cws_model  --test ../data/zh_test_raw  --train ../data/train_parsed
+```
 
 
 **-------------- original README.md ---------------------------**
