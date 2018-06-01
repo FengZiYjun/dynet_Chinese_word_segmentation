@@ -29,7 +29,7 @@ Sentence = namedtuple('Sentence',['score','score_expr','LSTMState','y','prevStat
 
 
 class CWS (object):
-    def __init__(self,Cemb,character_idx_map,options):
+    def __init__(self, Cemb, options):
         #model = dy.Model()
         model = dy.ParameterCollection()
         #self.trainer = dy.MomentumSGDTrainer(model,options['lr'],options['momentum'],options['edecay']) # we use Momentum SGD
@@ -37,7 +37,7 @@ class CWS (object):
         self.params = self.initParams(model,Cemb,options)
         self.options = options
         self.model = model
-        self.character_idx_map = character_idx_map
+        #self.character_idx_map = character_idx_map
         self.known_words = None
     
     def load(self,filename):
@@ -218,23 +218,19 @@ def dy_train_model(
         test_file = "../data/test_cut"
         #print 'finished sentence seg over test set'
 
-    options = locals().copy()
+    options = {"lr": lr, "momentum": momentum, "word_dims": word_dims, "char_dims": char_dims, 
+            "nhiddens": nhiddens, "max_word_len": max_word_len, "dropout_rate": dropout_rate, 
+            "margin_loss_discount": margin_loss_discount}
+    #options = locals().copy()
     #print 'Model options:'
     #for kk,vv in options.iteritems():
         #print '\t',kk,'\t',vv
 
+    print("char_embs={}, train_file={}, pre_train={}".format(char_dims, train_file, pre_trained))
     Cemb, character_idx_map = initCemb(char_dims,train_file,pre_trained)
 
-    cws = CWS(Cemb,character_idx_map,options)
+    cws = CWS(Cemb, options)
 
-    if infer_mode:
-        if load_params is not None:
-            cws.load(load_params)
-            test(cws, test_file, "../result/test_result")
-            exit()
-        else:
-            print("Please provide load_params")
-            exit()
 
     char_seq, _ , truth = prepareData(character_idx_map,train_file)
     
@@ -260,7 +256,17 @@ def dy_train_model(
 
     n = len(char_seq)
     #print 'Total number of training instances:',n
-    
+
+
+    if infer_mode:
+        if load_params is not None:
+            cws.load(load_params)
+            test(cws, test_file, "../result/test_result", character_idx_map)
+            exit()
+        else:
+            print("Please provide load_params")
+            exit()
+
     #print 'Start training model'
     start_time = time.time()
     nsamples = 0
@@ -283,12 +289,12 @@ def dy_train_model(
             if nsamples % batch_size == 0:
                 cws.trainer.update()
 
-        cws.trainer.update_epoch(1.)
+        #cws.trainer.update_epoch(1.)  # update to latest dynet
         end_time = time.time()
         #print 'Trained %s epoch(s) (%d samples) took %.lfs per epoch'%(eidx+1,nsamples,(end_time-start_time)/(eidx+1))       
 
         # predict on dev set
-        test(cws, dev_file, '../result/dev_result%d'%(eidx+1))
+        test(cws, dev_file, '../result/dev_result%d'%(eidx+1), character_idx_map)
 
         # convert dev parsed text into CWS BMES format
         os.system("python ../result/parsed2cws.py --input ../result/dev_result%d " 
@@ -315,7 +321,7 @@ def dy_train_model(
             best_accuracy = accuracy
             # predict on test file
             print("Testing on test set.")
-            test(cws, test_file, '../result/pred_test')
+            test(cws, test_file, '../result/pred_test', character_idx_map)
 
             #os.system('python score.py %s %d %d'%(dev_file,eidx+1,eidx+1))
             cws.save("../result/model/best_cws_model")

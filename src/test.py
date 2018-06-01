@@ -2,7 +2,7 @@
 import re
 from tools import prepareData
 
-def test(cws,filename,output_path):
+def test(cws,filename,output_path, character_idx_map):
 
     def seg(char_seq,text):
         lens = cws.forward(char_seq)
@@ -12,7 +12,7 @@ def test(cws,filename,output_path):
             begin+=wlen
         return res
 
-    char_seqs = prepareData(cws.character_idx_map,filename,test=True)
+    char_seqs = prepareData(character_idx_map,filename,test=True)
     fo = open(output_path,'wb')
     seq_idx = 0 
     for line in open(filename).readlines():

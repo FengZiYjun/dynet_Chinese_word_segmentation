@@ -14,15 +14,18 @@ if __name__ == "__main__":
     parser.add_argument("--test")
     parser.add_argument("--dynet-devices")
     parser.add_argument("--infer_model", default=None)
+    parser.add_argument("--epoch", default=40, type=int)
     args = parser.parse_args()
     train = args.train
     dev = args.dev
     test = args.test
     infer_model = args.infer_model
+    epoch = args.epoch
+    infer_mode = False if infer_model is None else True
     
     dy_train_model(
-            infer_mode = True,
-            max_epochs = 30,
+            infer_mode = infer_mode,
+            max_epochs = epoch,
             batch_size = 256,
             char_dims = 100,
             word_dims = 50,
