@@ -197,6 +197,7 @@ def dy_train_model(
     train_file = None,
     dev_file = None,
     test_file = None,
+    test_output = None,
     lr = 0.5,
     edecay = 0.1,
     momentum = 0.5,
@@ -271,7 +272,10 @@ def dy_train_model(
         if load_params is not None:
             cws.load(load_params)
             test(cws, test_file, "../data/test_result", character_idx_map)
-            os.system("python parse2conll.py --input ../data/test_result --output ../result/zh_cws.conll")
+            if test_output:
+                os.system("python parse2conll.py --input ../data/test_result --output " + test_output)
+            else:
+                os.system("python parse2conll.py --input ../data/test_result --output ../result/zh_cws.conll")
             return
         else:
             print("Please provide load_params")
@@ -333,7 +337,7 @@ def dy_train_model(
             
             # apply on test set
             if test_file:
-                test(cws, test_file, '../result/predict_test', character_idx_map)
+                test(cws, test_file, '../result/best_test_in_training', character_idx_map)
             
             cws.save("../result/model/best_cws_model")
             print('Current model saved')

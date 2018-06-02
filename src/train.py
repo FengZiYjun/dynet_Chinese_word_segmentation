@@ -12,6 +12,7 @@ if __name__ == "__main__":
     parser.add_argument("--train")
     parser.add_argument("--dev")
     parser.add_argument("--test")
+    parser.add_argument("--test_output", default=None)
     parser.add_argument("--dynet-devices")
     parser.add_argument("--infer_model", default=None)
     parser.add_argument("--epoch", default=40, type=int)
@@ -19,6 +20,7 @@ if __name__ == "__main__":
     train = args.train
     dev = args.dev
     test = args.test
+    test_output = args.test_output
     infer_model = args.infer_model
     epoch = args.epoch
     infer_mode = False if infer_model is None else True
@@ -26,8 +28,8 @@ if __name__ == "__main__":
     dy_train_model(
             infer_mode = infer_mode,
             max_epochs = epoch,
-            batch_size = 256,
-            char_dims = 100,
+            batch_size = 128,
+            char_dims = 50,
             word_dims = 50,
             nhiddens = 50,
             dropout_rate = 0.2,
@@ -39,6 +41,7 @@ if __name__ == "__main__":
             train_file = train,
             dev_file = dev,
             test_file = test,
+            test_output = test_output,
             pre_trained = None,
             lr = 0.1,
             edecay = 0.05, #msr,pku 0.2,0.1
