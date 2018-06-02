@@ -216,13 +216,14 @@ def dy_train_model(
         print("Please provide test set.")
         return
     
-    if not infer_mode:
-        # convert conll files into word seg text with conll2parse.py
-        os.system("python conll2seg.py --input %s --output ../data/train_seg" % train_file)
-        os.system("python conll2seg.py --input %s --output ../data/dev_seg" % dev_file)
+        
+    os.system("python conll2seg.py --input %s --output ../data/train_seg" % train_file)
+    train_file = "../data/train_seg"
 
+    if not infer_mode:
+        # convert conll files into word seg text with conll2seg.py
+        os.system("python conll2seg.py --input %s --output ../data/dev_seg" % dev_file)
         # replace dev_file & train_file with new file paths
-        train_file = "../data/train_seg"
         dev_file = "../data/dev_seg"
         print("converted conllu input to word seg input")
 
