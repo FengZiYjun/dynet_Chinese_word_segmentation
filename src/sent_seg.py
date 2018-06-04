@@ -12,12 +12,11 @@ output_file = args.output
 cut_list = "."
 NUM = "0123456789"
 
-with open(input_file, "r") as f:
+with open(input_file, "r", encoding="utf-8") as f:
     content = f.read()
 
 tokens = []
 str_list = list()
-content = content.decode("utf8")
 start = 0
 end = 0
 for i in range(len(content)):
@@ -26,5 +25,5 @@ for i in range(len(content)):
         str_list.append(content[start:end+1] + "\n")
         start = i+1
 
-with open(output_file, "w") as f:
-    f.write("".join(str_list).encode("utf8"))
+with open(output_file, "w", encoding="utf-8") as f:
+    f.write("".join(str_list))

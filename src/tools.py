@@ -7,10 +7,10 @@ import gensim
 import re
 
 def initCemb(ndims,train_file,pre_trained,thr = 5.):
-    f = open(train_file)
+    f = open(train_file, "r", encoding="utf-8")
     train_vocab = defaultdict(float)
     for line in f.readlines():
-        sent = unicode(line.decode('utf8')).split()
+        sent = unicode(line).split()
         for word in sent:
             for character in word:
                 train_vocab[character]+=1
@@ -44,7 +44,7 @@ def SMEB(lens):
 
 def prepareData(character_idx_map,path,test=False):
     seqs,wlenss,idxss = [],[],[]
-    f = open(path)
+    f = open(path, "r", encoding="utf-8")
     for line in f.readlines():
         sent = unicode(line.decode('utf8')).split()
         Left = 0

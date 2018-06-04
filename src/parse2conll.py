@@ -14,16 +14,16 @@ args = parser.parse_args()
 input_file = args.input
 output_file = args.output
 
-with open(input_file, "r") as f:
+with open(input_file, "r", encoding="utf-8") as f:
     lines = f.readlines()
 
 string = ""
 
 for line in lines:
-    tokens = line.decode("utf8").split()
+    tokens = line.split()
     for idx, token in enumerate(tokens):
         string += (str(idx + 1) + "\t" + token + "\n")
     string += "\n"
 
-with open(output_file, "w") as f:
-    f.write(string.encode("utf8"))
+with open(output_file, "w", encoding="utf-8") as f:
+    f.write(string)
