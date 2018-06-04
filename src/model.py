@@ -1,5 +1,7 @@
 # -*- coding: UTF-8 -*-
-import random,time,os
+import random
+import time
+import os
 from collections import Counter, namedtuple
 
 import numpy as np
@@ -66,7 +68,7 @@ class CWS (object):
         params['word_score_U'] = model.add_parameters(options['word_dims'])
         params['predict_W'] = model.add_parameters((options['word_dims'],options['nhiddens']))
         params['predict_b'] = model.add_parameters(options['word_dims'])
-        for wlen in xrange(1,options['max_word_len']+1):
+        for wlen in range(1,options['max_word_len']+1):
             params['reset_gate_W'].append(model.add_parameters((wlen*options['char_dims'],wlen*options['char_dims'])))
             params['reset_gate_b'].append(model.add_parameters(wlen*options['char_dims']))
             params['com_W'].append(model.add_parameters((options['word_dims'],wlen*options['char_dims'])))
@@ -122,7 +124,7 @@ class CWS (object):
 
         for idx, _ in enumerate(char_seq,1): # from left to right, character by character
             now = None
-            for wlen in xrange(1,min(idx,self.options['max_word_len'])+1): # generate word candidate vectors
+            for wlen in range(1,min(idx,self.options['max_word_len'])+1): # generate word candidate vectors
                 # join segmentation sent + word
                 word = self.word_repr(char_seq[idx-wlen:idx], cembs[idx-wlen:idx])
                 sent = agenda[idx-wlen]
@@ -292,7 +294,7 @@ def dy_train_model(
     best_accuracy = 0.0
 
     # Main training loop
-    for eidx in xrange(max_epochs):
+    for eidx in range(max_epochs):
         idx_list = range(n)
         if shuffle_data:
             np.random.shuffle(idx_list)

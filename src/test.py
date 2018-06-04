@@ -13,10 +13,10 @@ def test(cws,filename,output_path, character_idx_map):
         return res
 
     char_seqs = prepareData(character_idx_map,filename,test=True)
-    fo = open(output_path,'wb',encoding="utf-8")
+    fo = open(output_path,'w', encoding="utf-8")
     seq_idx = 0 
     for line in open(filename, "r", encoding="utf-8").readlines():
-        sent = unicode(line).split()
+        sent = (line).split()
         Left = 0
         output_sent = []
         for idx,word in enumerate(sent):
