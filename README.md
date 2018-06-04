@@ -2,6 +2,7 @@
 
 ### Updated from contributor FengZiYjun
 
+0. Upgrade to Python 3.
 1. Change the scoring script. Use "BMES" labels as critarion.
 2. Introduce dev set. Save model and predict on test set only when dev set gets higher accuracy, if test set specified during training.
 3. Train/Dev input is in *conllu* format. Test input is a raw text.
