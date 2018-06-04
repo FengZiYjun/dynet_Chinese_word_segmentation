@@ -229,9 +229,11 @@ def dy_train_model(
 
     # sentence segmentation
     if test_file:
-        os.system("python sent_seg.py --input %s --output ../data/test_cut" % test_file)
-        test_file = "../data/test_cut"
+        os.system("python sent_seg.py --input %s --output ../data/test_seg" % test_file)
         print("finished sentence seg over test set")
+        os.system("python insert_space.py --input %s --output ../data/test_cut" % test_file)
+        print("finished inserting space")
+        test_file = "../data/test_cut"
 
     options = {"lr": lr, "momentum": momentum, "word_dims": word_dims, "char_dims": char_dims, 
             "nhiddens": nhiddens, "max_word_len": max_word_len, "dropout_rate": dropout_rate, 
