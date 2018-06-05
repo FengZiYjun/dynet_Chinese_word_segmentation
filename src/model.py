@@ -1,11 +1,13 @@
 # -*- coding: UTF-8 -*-
-import random,time,os
+import random
+import time
+import os
 from collections import Counter, namedtuple
 
 import numpy as np
 import dynet as dy
 
-from tools import initCemb, prepareData
+from tools import initCemb, prepareData, conll2seg, sent_seg
 from test import test
 
 """
@@ -66,7 +68,7 @@ class CWS (object):
         params['word_score_U'] = model.add_parameters(options['word_dims'])
         params['predict_W'] = model.add_parameters((options['word_dims'],options['nhiddens']))
         params['predict_b'] = model.add_parameters(options['word_dims'])
-        for wlen in xrange(1,options['max_word_len']+1):
+        for wlen in range(1,options['max_word_len']+1):
             params['reset_gate_W'].append(model.add_parameters((wlen*options['char_dims'],wlen*options['char_dims'])))
             params['reset_gate_b'].append(model.add_parameters(wlen*options['char_dims']))
             params['com_W'].append(model.add_parameters((options['word_dims'],wlen*options['char_dims'])))
@@ -122,7 +124,7 @@ class CWS (object):
 
         for idx, _ in enumerate(char_seq,1): # from left to right, character by character
             now = None
-            for wlen in xrange(1,min(idx,self.options['max_word_len'])+1): # generate word candidate vectors
+            for wlen in range(1,min(idx,self.options['max_word_len'])+1): # generate word candidate vectors
                 # join segmentation sent + word
                 word = self.word_repr(char_seq[idx-wlen:idx], cembs[idx-wlen:idx])
                 sent = agenda[idx-wlen]
@@ -133,7 +135,7 @@ class CWS (object):
                 word_score = dy.dot_product(word,self.param_exprs['U'])
 
                 if truth is not None:
-                    golden =  sent.golden and truth[idx-1]==wlen
+                    golden = sent.golden and truth[idx-1]==wlen
                     margin = dy.scalarInput(mu*wlen if truth[idx-1]!=wlen else 0.)
                     score = margin + sent.score_expr + dy.dot_product(sent.y, word) + word_score
                 else:
@@ -181,28 +183,29 @@ class CWS (object):
         loss.backward()
         return res
 
+
 def dy_train_model(
-    infer_mode = False,
-    max_epochs = 30,
-    batch_size = 256,
-    char_dims = 50,
-    word_dims = 100,
-    nhiddens = 50,
-    dropout_rate = 0.2,
-    margin_loss_discount = 0.2,
-    max_word_len = 4,
-    load_params = None,
-    max_sent_len = 60,
-    shuffle_data = True,
-    train_file = None,
-    dev_file = None,
-    test_file = None,
-    test_output = None,
-    lr = 0.5,
-    edecay = 0.1,
-    momentum = 0.5,
-    pre_trained = '../w2v/char_vecs_100',
-    word_proportion = 0.5
+    infer_mode=False,
+    max_epochs=30,
+    batch_size=256,
+    char_dims=50,
+    word_dims=100,
+    nhiddens=50,
+    dropout_rate=0.2,
+    margin_loss_discount=0.2,
+    max_word_len=4,
+    load_params=None,
+    max_sent_len=60,
+    shuffle_data=True,
+    train_file=None,
+    dev_file=None,
+    test_file=None,
+    test_output=None,
+    lr=0.5,
+    edecay=0.1,
+    momentum=0.5,
+    pre_trained='../w2v/char_vecs_100',
+    word_proportion=0.5
 ):
     if train_file is None:
         print("Please provide training set.")
@@ -215,22 +218,28 @@ def dy_train_model(
     if infer_mode is True and test_file is None:
         print("Please provide test set.")
         return
-    
-        
-    os.system("python conll2seg.py --input %s --output ../data/train_seg" % train_file)
-    train_file = "../data/train_seg"
+
+    train_file_seg = "../data/train_seg"
+    conll2seg(input_file=train_file, output_file=train_file_seg)
+    train_file = train_file_seg
+    #os.system("python conll2seg.py --input %s --output ../data/train_seg" % train_file)
+    print("converted conllu training set into word seg input")
 
     if not infer_mode:
         # convert conll files into word seg text with conll2seg.py
-        os.system("python conll2seg.py --input %s --output ../data/dev_seg" % dev_file)
+        dev_file_seg = "../data/dev_seg"
+        conll2seg(input_file=dev_file, output_file=dev_file_seg)
+        #os.system("python conll2seg.py --input %s --output ../data/dev_seg" % dev_file)
+        dev_file = dev_file_seg
         # replace dev_file & train_file with new file paths
-        dev_file = "../data/dev_seg"
-        print("converted conllu input to word seg input")
+        print("converted conllu dev input to word seg input")
 
     # sentence segmentation
     if test_file:
-        os.system("python sent_seg.py --input %s --output ../data/test_cut" % test_file)
-        test_file = "../data/test_cut"
+        #os.system("python sent_seg.py --input %s --output ../data/test_cut" % test_file)
+        test_file_cut = "../data/test_cut"
+        sent_seg(input_file=test_file, output_file=test_file_cut)
+        test_file = test_file_cut
         print("finished sentence seg over test set")
 
     options = {"lr": lr, "momentum": momentum, "word_dims": word_dims, "char_dims": char_dims, 
@@ -238,7 +247,7 @@ def dy_train_model(
             "margin_loss_discount": margin_loss_discount}
     print("Model params: ", options)
 
-    Cemb, character_idx_map = initCemb(char_dims,train_file,pre_trained)
+    Cemb, character_idx_map = initCemb(char_dims, train_file, pre_trained)
 
     cws = CWS(Cemb, options)
 
@@ -290,7 +299,7 @@ def dy_train_model(
     best_accuracy = 0.0
 
     # Main training loop
-    for eidx in xrange(max_epochs):
+    for eidx in range(max_epochs):
         idx_list = range(n)
         if shuffle_data:
             np.random.shuffle(idx_list)

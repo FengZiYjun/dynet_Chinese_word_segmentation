@@ -9,11 +9,11 @@ import argparse
 if __name__ == "__main__":
       
     parser = argparse.ArgumentParser()
-    parser.add_argument("--train")
-    parser.add_argument("--dev")
-    parser.add_argument("--test")
+    parser.add_argument("--train", default=None, type=str)
+    parser.add_argument("--dev", default=None)
+    parser.add_argument("--test", default=None)
     parser.add_argument("--test_output", default=None)
-    parser.add_argument("--dynet-devices")
+    #parser.add_argument("--dynet-devices")
     parser.add_argument("--infer_model", default=None)
     parser.add_argument("--epoch", default=40, type=int)
     args = parser.parse_args()
