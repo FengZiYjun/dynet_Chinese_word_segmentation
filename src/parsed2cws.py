@@ -17,12 +17,11 @@ output = args.output
 
 NUMS = "0123456789"
 
-with open(file, "r") as f:
+with open(file, "r", encoding="utf-8") as f:
     lines = f.readlines()
 
 string = ""
 for line in lines:
-    line = line.decode('utf8')
     for tokens in line[:-1].split():
         if tokens[0] in NUMS:
             string += (tokens + '#<NUM>#S_N\n')
@@ -38,5 +37,5 @@ for line in lines:
     string += "\n"
 
 
-with open(output, "w") as f:
-    f.write(string.encode('utf8'))
+with open(output, "w", encoding="utf-8") as f:
+    f.write(string)

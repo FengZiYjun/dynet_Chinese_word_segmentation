@@ -12,13 +12,12 @@ input_file = args.input
 output_file = args.output
 
 
-with open(input_file, "r") as f:
+with open(input_file, "r", encoding="utf-8") as f:
     lines = f.readlines()
 
 tokens = []
 string = ""
 for line in lines:
-    line = line.decode("utf8")
     if line[0] == '#':
         continue
     if line == "\n":
@@ -28,5 +27,5 @@ for line in lines:
     tokens.append(line.split()[1])
 
 
-with open(output_file, "w") as f:
-    f.write(string.encode("utf8"))
+with open(output_file, "w", encoding="utf-8") as f:
+    f.write(string)

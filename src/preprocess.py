@@ -25,10 +25,10 @@ def preprocess(path, longws= set()):
     rENG = u'[A-Za-z_.]+'
     word_count, char_count, sent_count = 0, 0, 0
     count_longws = 0
-    with open(path,'r') as f:
+    with open(path,'r',encoding="utf-8") as f:
         sents = []
         for line in f.readlines():
-            sent = strQ2B(unicode(line.decode('utf8')).strip()).split()
+            sent = strQ2B(unicode(line)).strip()).split()
             new_sent = []
             for word in sent:
                 word = re.sub(u'\s+','',word,flags =re.U)
@@ -48,9 +48,9 @@ def preprocess(path, longws= set()):
     return sents
 
 def write(filename, sents):
-    f= open(filename,'w')
+    f= open(filename,'w', encoding="utf-8")
     for sent in sents:
-        f.write('  '.join(sent).encode('utf8')+'\r\n')
+        f.write('  '.join(sent) + '\r\n')
     f.close() 
 
 def check(sents): # get those words longer than our maximum word length setting

@@ -6,7 +6,7 @@ return a label score
 
 """
 
-import logger
+#import logger
 import argparse
 
 
@@ -42,11 +42,17 @@ def build_labels(input_file):
                     string += (tokens[idx] + '#' + tokens[idx] + '#M_N\n')
                 string += (tokens[len(tokens)-1] + '#' + tokens[len(tokens)-1] + '#E_N\n')
         string += "\n"
-    return string
+
+    with open("tmp0", "w", encoding="utf-8") as f:
+        f.write(string)
+
+    with open("tmp0", "r", encoding="utf-8") as f:
+        lines = f.readlines()
+    return lines
 
 
-lines1 = build_labels(file1).split("\n")
-lines2 = build_labels(file2).split("\n")
+lines1 = build_labels(file1)
+lines2 = build_labels(file2)
 
 # if len(lines1) != len(lines2):
 #    print("length not equal")
@@ -65,8 +71,8 @@ pred = ""
 diff = False
 
 # logger = logger.Logger("./cmp_" + file1[:3] + "_" + file2[:3])
-logger = logger.Logger(output)
-log_text = ""
+#logger = logger.Logger(output)
+#log_text = ""
 
 while i < length1 and j < length2:
     tokens1 = lines1[i]
@@ -133,6 +139,6 @@ while i < length1 and j < length2:
 # print("correct=", correct)
 print("Accuracy={}".format(correct / total))
 
-log_text += str(float(correct) / total)
+#log_text += str(float(correct) / total)
 
-logger.log(log_text)
+#logger.log(log_text)
