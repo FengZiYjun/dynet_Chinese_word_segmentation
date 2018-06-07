@@ -7,8 +7,8 @@ from collections import Counter, namedtuple
 import numpy as np
 import dynet as dy
 
-from tools import initCemb, prepareData, conll2seg, sent_seg, seg2conll
-from test import test
+from .tools import initCemb, prepareData, conll2seg, sent_seg, seg2conll
+from .test import test
 
 """
 File converts: 

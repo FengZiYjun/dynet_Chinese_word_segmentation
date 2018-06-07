@@ -1,4 +1,4 @@
-from model import dy_train_model
+from src.model import dy_train_model
 
 
 def from_dynet(path_to_model, train_file, test_file):
@@ -26,3 +26,8 @@ def from_dynet(path_to_model, train_file, test_file):
         word_proportion=0.5
     )
 
+
+if __name__ == "__main__":
+    x = from_dynet(path_to_model="./result/model/best_cws_model", train_file="./data/zh_gsd-ud-train.conllu",
+               test_file="./data/dev_raw")
+    print(x)

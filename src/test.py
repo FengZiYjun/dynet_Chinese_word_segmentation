@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 import re
-from tools import prepareData
+from .tools import prepareData
 
 
 def test(cws, test_cut, character_idx_map):

@@ -6,7 +6,7 @@ import argparse
 
 
 def labeling(sent):
-    char_label = []   # list of tuple of (char, label)
+    char_label = []  # list of tuple of (char, label)
     tokens = sent.strip().split()
     for token in tokens:
         if len(token) == 1:
