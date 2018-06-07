@@ -226,7 +226,7 @@ def dy_train_model(
     if not infer_mode:
         # convert conll files into word seg text with conll2seg.py
         dev_file_seg = "../data/dev_seg"
-        conll2seg(input_file=dev_file, output_file=dev_file_seg)
+        conll2seg(input_file=dev_file)
         dev_file = dev_file_seg
         # replace dev_file & train_file with new file paths
         print("converted conllu dev input to word seg input")
@@ -310,7 +310,7 @@ def dy_train_model(
         eidx + 1, nsamples, (end_time - start_time) / (eidx + 1)))
 
         # predict on dev set
-        test(cws, dev_file, '../result/dev_result%d' % (eidx + 1), character_idx_map)
+        test_result = test(cws, test_cut, character_idx_map)
 
         # convert dev parsed text into CWS BMES format
         os.system("python parsed2cws.py --input ../result/dev_result%d "

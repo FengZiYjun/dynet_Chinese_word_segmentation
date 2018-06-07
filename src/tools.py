@@ -87,17 +87,39 @@ def conll2seg(input_file):
 
 
 def sent_seg(input_file):
-    cut_list = "."
+    cut_list = ".?"
     NUM = "0123456789"
+    special = {"「": "」"}
+    wait_stack = []
+    inside_special = False
     with open(input_file, "r", encoding="utf-8") as f:
         content = f.read()
     str_list = list()
     start = 0
+    cut_sign_inside_special = False
     for i in range(len(content)):
-        if content[i] in cut_list and content[i - 1] not in NUM:
-            end = i
-            str_list.append(content[start:end + 1] + "\n")
-            start = i + 1
+        if content[i] in special:
+            inside_special = True
+            wait_stack.append(special[content[i]])
+            continue
+        if content[i] in wait_stack:
+            inside_special = False
+            wait_stack.remove(content[i])
+            if cut_sign_inside_special:
+                end = i
+                str_list.append(content[start:end + 1] + "\n")
+                start = i + 1
+            continue
+        if content[i] in cut_list:
+            if content[i] == "." and content[i-1] in NUM and content[i+1] in NUM:
+                # this is a decimal
+                continue
+            if not inside_special:
+                end = i
+                str_list.append(content[start:end + 1] + "\n")
+                start = i + 1
+            else:
+                cut_sign_inside_special = True
     return "".join(str_list)
 
 
